@@ -33,7 +33,8 @@ jobs:
     steps:
       - checkout
       - run: echo "This is a deploy step"
-
+    when: always
+    
 workflows:
   version: 2
   django:
