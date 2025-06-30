@@ -30,3 +30,15 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - run: echo "This is a deploy step"
+  
+  artifact:
+    needs: [prod]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Create the artifact file
+        run: echo "hello" > hello.txt
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact upload
+          path: hello.txt
