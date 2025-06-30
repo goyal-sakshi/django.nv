@@ -43,21 +43,30 @@ jobs:
       - store_artifacts:
           path: hello.txt
           destination: /tmp
+
+filters: &only-main
+  branches:
+    only: main
     
 workflows:
   version: 2
   django:
     jobs:
-      - build
+      - build:
+          filters: *only-main
       - test:
           requires:
             - build
+          filters: *only-main
       - integration:
           requires:
             - test
+          filters: *only-main
       - prod:
           requires:
             - integration
+          filters: *only-main
       - artifacts:
           requires:
             - prod
+          filters: *only-main
