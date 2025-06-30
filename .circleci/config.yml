@@ -45,7 +45,6 @@ workflows:
       - integration:
           requires:
             - test
-          continue-on-error: true
       - prod:
           requires:
             - integration
