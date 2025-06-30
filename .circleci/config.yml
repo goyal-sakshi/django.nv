@@ -39,13 +39,13 @@ workflows:
   django:
     jobs:
       - build
-      - test
+      - test:
           requires:
             - build
-      - integration
+      - integration:
           requires:
             - test
           continue-on-error: true
-      - prod
+      - prod:
           requires:
             - integration
