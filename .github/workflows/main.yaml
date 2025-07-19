@@ -45,6 +45,7 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v2
+      - run: git branch
       - run: docker run --rm -v $(pwd):/src hysnsec/trufflehog filesystem /src --json > trufflehog-output.json
         continue-on-error: true   
       - uses: actions/upload-artifact@v4
