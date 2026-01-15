@@ -1,13 +1,13 @@
-name: Django                                  # workflow name
+name: Security Workflow
 
 on:
   push:
-    branches:                                 # similar to "only" in GitLab
+    branches:
       - main
 
 jobs:
   build:
-    runs-on: ubuntu-22.04                    # similar to "image" in GitLab
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
 
@@ -40,6 +40,7 @@ jobs:
           source env/bin/activate
           pip install -r requirements.txt
           python manage.py test taskManager
+          
   secret_scanning:
     runs-on: ubuntu-22.04
     needs: test
@@ -47,12 +48,13 @@ jobs:
       - uses: actions/checkout@v2
       - run: git branch
       - run: docker run --rm -v $(pwd):/src hysnsec/trufflehog filesystem /src --json > trufflehog-output.json
-        continue-on-error: true   
+        continue-on-error: true
       - uses: actions/upload-artifact@v4
         with:
           name: TruffleHog
           path: trufflehog-output.json
-        if: always()                        # what is this for?
+        if: always()
+        
   sast:
     runs-on: ubuntu-22.04
     needs: build
@@ -64,20 +66,21 @@ jobs:
         with:
           name: Bandit
           path: bandit-output.json
-        if: always()                        # what is this for?
-  oast:
+        if: always()
+        
+  oast-backend:
     runs-on: ubuntu-22.04
     needs: test
     steps:
       - uses: actions/checkout@v2
       - run: docker run --rm -v $(pwd):/src hysnsec/safety check -r requirements.txt --json > oast-results.json
-        continue-on-error: true             # allow the build to fail, similar to "allow_failure: true" in GitLab
+        continue-on-error: true
 
       - uses: actions/upload-artifact@v4
         with:
           name: Safety
           path: oast-results.json
-        if: always()                        # what is this for?
+        if: always()
 
   oast-frontend:
     runs-on: ubuntu-22.04
@@ -94,12 +97,12 @@ jobs:
       - run: docker run --rm -v $(pwd):/src -w /src hysnsec/retire --outputformat json --outputpath retirejs-report.json --severity high
         continue-on-error: true  
 
-      - uses: actions/upload-artifact@v4
-        name: "Upload RetireJS Artifact - v4"
+      - name: "Upload RetireJS Artifact - v4"
+        uses: actions/upload-artifact@v4
         with:
           name: RetireJS
           path: retirejs-report.json
-        if: always()                        # what is this for?
+        if: always()
 
   integration:
     runs-on: ubuntu-22.04
